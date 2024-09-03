@@ -1,11 +1,17 @@
 import { useQuery, useMutation } from "@tanstack/react-query"
 import axios from "axios"
 import { useRouter } from "next/router"
+import { useState } from "react"
 
 export default function PostDetail() {
     const router = useRouter()
     const { postIdx } = router.query
+    const me = useQuery({
+        queryKey: ["me"],
+        queryFn: async () => await axios.get("/api/me"),
+    })
 
+    const userIdx = me.data?.data.idx
     const { data: post, refetch } = useQuery({
         queryKey: ["post", postIdx],
         queryFn: async () => {
@@ -17,13 +23,53 @@ export default function PostDetail() {
     const deletePostMutation = useMutation({
         mutationFn: async (postIdx: number) =>
             await axios.delete(`/api/posts/${postIdx}`),
-        onSuccess: () => refetch(),
+        onError: (error: any) => {
+            if (error.response?.status === 403) {
+                alert(error.response.data.message)
+            } else {
+                alert("An unexpected error occurred")
+            }
+        },
+        onSuccess: () => router.push("/posts"),
     })
+    const [isEditing, setIsEditing] = useState(false)
+    const [editedTitle, setEditedTitle] = useState(post?.title || "")
+    const [editedContent, setEditedContent] = useState(post?.content || "")
+
+    // const [isUpdating, setIsUpdating] = useState(false)
+    // const [updatedContent, setUpdatedContent] = useState(
+    //     comment?.content || ""
+    // )
+
     const updatePostMutation = useMutation({
-        mutationFn: async (postIdx: number) =>
-            await axios.put(`/api/posts/${postIdx}`),
-        onSuccess: () => refetch(),
+        mutationFn: async ({ title, content }: any) =>
+            await axios.put(`/api/posts/${postIdx}`, { title, content }),
+        onError: (error: any) => {
+            if (error.response?.status === 403) {
+                alert(error.response.data.message)
+            } else {
+                alert("An unexpected error occurred")
+            }
+        },
+        onSuccess: () => {
+            setIsEditing(false)
+            refetch()
+        },
     })
+    const handleEdit = () => {
+        setIsEditing(true)
+    }
+    const handleSave = () => {
+        updatePostMutation.mutate({
+            title: editedTitle,
+            content: editedContent,
+        })
+    }
+    const handleCancel = () => {
+        setIsEditing(false)
+        setEditedTitle(post?.title || "")
+        setEditedContent(post?.content || "")
+    }
     const createCommentMutation = useMutation({
         mutationFn: async (newComment: { content: string }) =>
             await axios.post(`/api/posts/${postIdx}/comments`, newComment),
@@ -35,43 +81,96 @@ export default function PostDetail() {
             await axios.delete(`/api/comments/${commentIdx}`),
         onSuccess: () => refetch(),
     })
+    // const updateCommentMutation = useMutation({
+    //     mutationFn: async (commentIdx: number) =>
+    //         await axios.put(`/api/comments/${commentIdx}`),
+    //     onSuccess: () => refetch(),
+    // })
+    // const handleUpdate = () => {
+    //     setIsUpdating(true)
+    // }
 
     return (
         <div className='container mx-auto p-4'>
-            <h1 className='text-2xl font-bold mb-4'>{post?.title}</h1>
-            <p>{post?.content}</p>
-            <button
-                onClick={(e) => {
-                    e.stopPropagation()
-                    deletePostMutation.mutate(post.idx)
-                }}
-                className='bg-red-500 text-white py-1 px-2 rounded mt-2'
-            >
-                Delete
-            </button>
-            <button
-                onClick={(e) => {
-                    e.stopPropagation()
-                    updatePostMutation.mutate(post.idx)
-                }}
-                className='bg-yellow-500 text-white py-1 px-2 rounded mt-2 ml-2'
-            >
-                Edit
-            </button>
+            {isEditing ? (
+                <>
+                    <input
+                        value={editedTitle}
+                        onChange={(e) => setEditedTitle(e.target.value)}
+                        className='text-2xl font-bold mb-4 w-full p-2 border rounded'
+                    />
+                    <textarea
+                        value={editedContent}
+                        onChange={(e) => setEditedContent(e.target.value)}
+                        className='w-full p-2 border rounded mb-4'
+                        rows={6}
+                    />
+                    <button
+                        onClick={handleSave}
+                        className='bg-green-500 text-white py-2 px-4 rounded-md mr-2'
+                    >
+                        Save
+                    </button>
+                    <button
+                        onClick={handleCancel}
+                        className='bg-gray-500 text-white py-2 px-4 rounded-md'
+                    >
+                        Cancel
+                    </button>
+                </>
+            ) : (
+                <>
+                    <h1 className='text-2xl font-bold mb-4'>{post?.title}</h1>
+                    <p>{post?.content}</p>
+
+                    {post?.authorIdx === userIdx && (
+                        <>
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation()
+                                    deletePostMutation.mutate(post.idx)
+                                }}
+                                className='bg-red-500 text-white py-1 px-2 rounded mt-2'
+                            >
+                                Delete
+                            </button>
+                            <button
+                                onClick={handleEdit}
+                                className='bg-yellow-500 text-white py-1 px-2 rounded mt-2 ml-2'
+                            >
+                                Edit
+                            </button>
+                        </>
+                    )}
+                </>
+            )}
             <div className='mt-6'>
                 <h2 className='text-xl font-semibold'>Comments</h2>
                 <div className='space-y-4 mt-4'>
                     {post?.comments.map((comment: any) => (
                         <div key={comment.idx} className='border p-2 rounded'>
                             <p>{comment.content}</p>
-                            <button
-                                onClick={() =>
-                                    deleteCommentMutation.mutate(comment.idx)
-                                }
-                                className='bg-red-500 text-white py-1 px-2 rounded mt-2'
-                            >
-                                Delete Comment
-                            </button>
+                            {comment?.authorIdx === userIdx && (
+                                <>
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation()
+                                            deleteCommentMutation.mutate(
+                                                comment.idx
+                                            )
+                                        }}
+                                        className='bg-red-500 text-white py-1 px-2 rounded mt-2'
+                                    >
+                                        Delete
+                                    </button>
+                                    {/* <button
+                                        onClick={handleUpdate}
+                                        className='bg-yellow-500 text-white py-1 px-2 rounded mt-2 ml-2'
+                                    >
+                                        Edit
+                                    </button> */}
+                                </>
+                            )}
                         </div>
                     ))}
                 </div>

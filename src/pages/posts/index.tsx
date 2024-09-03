@@ -8,15 +8,19 @@ export default function Posts() {
     const { page } = router.query
     const [isCreating, setIsCreating] = useState(false)
 
+    let pageNumber = 1
+    if (page !== undefined && !Array.isArray(page)) {
+        pageNumber = parseInt(page, 10)
+    }
     const { data, isLoading, error, refetch } = useQuery({
-        queryKey: ["posts"],
+        queryKey: ["posts", pageNumber],
         queryFn: async () => {
-            const response = await axios.get(`/api/posts`)
+            const response = await axios.get(`/api/posts`, {
+                params: { page: pageNumber },
+            })
             return response.data
         },
     })
-
-    
     const createPostMutation = useMutation({
         mutationFn: async (newPost: { title: string; content: string }) =>
             await axios.post("/api/posts", newPost),
@@ -33,11 +37,6 @@ export default function Posts() {
     }
     if (isLoading) return <div>Loading...</div>
     if (error) return <div>Error fetching posts</div>
-
-    let pageNumber = 1
-    if (page !== undefined && !Array.isArray(page)) {
-        pageNumber = parseInt(page, 10)
-    }
 
     return (
         <div className='container mx-auto p-4'>
@@ -109,8 +108,6 @@ export default function Posts() {
                                     {post.title}
                                 </h2>
                                 <p>{post.content}</p>
-                                
-                                
                             </div>
                         ))}
                     </div>
