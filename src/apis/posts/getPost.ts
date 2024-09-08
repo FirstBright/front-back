@@ -30,7 +30,12 @@ export const getPostByIdx = async (idx: number) => {
     return prisma.post.findUnique({
         where: { idx },
         include: {
-            comments: true,
+            author: true,
+            comments: {
+                include: {
+                    author: true,
+                },
+            },
         },
     })
 }

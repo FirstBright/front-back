@@ -191,7 +191,10 @@ export default function PostDetail() {
                                 </>
                             ) : (
                                 <>
-                                    <p>{comment.author}</p>
+                                    <p>
+                                        <strong>Author </strong>
+                                        {comment.author.nickname}
+                                    </p>
                                     <p>{comment.content}</p>
                                     {comment?.authorIdx === userIdx && (
                                         <>
