@@ -36,10 +36,10 @@ export default function PostDetail() {
     const [editedTitle, setEditedTitle] = useState(post?.title || "")
     const [editedContent, setEditedContent] = useState(post?.content || "")
 
-    // const [isUpdating, setIsUpdating] = useState(false)
-    // const [updatedContent, setUpdatedContent] = useState(
-    //     comment?.content || ""
-    // )
+    const [isEditingComment, setIsEditingComment] = useState<number | null>(
+        null
+    )
+    const [editedCommentContent, setEditedCommentContent] = useState("")
 
     const updatePostMutation = useMutation({
         mutationFn: async ({ title, content }: any) =>
@@ -56,6 +56,7 @@ export default function PostDetail() {
             refetch()
         },
     })
+
     const handleEdit = () => {
         setIsEditing(true)
     }
@@ -75,20 +76,31 @@ export default function PostDetail() {
             await axios.post(`/api/posts/${postIdx}/comments`, newComment),
         onSuccess: () => refetch(),
     })
+    const updateCommentMutation = useMutation({
+        mutationFn: async ({ commentIdx, content }: any) =>
+            await axios.put(`/api/comments/${commentIdx}`, { content }),
+        onSuccess: () => {
+            setIsEditingComment(null)
+            refetch()
+        },
+    })
 
     const deleteCommentMutation = useMutation({
         mutationFn: async (commentIdx: number) =>
             await axios.delete(`/api/comments/${commentIdx}`),
         onSuccess: () => refetch(),
     })
-    // const updateCommentMutation = useMutation({
-    //     mutationFn: async (commentIdx: number) =>
-    //         await axios.put(`/api/comments/${commentIdx}`),
-    //     onSuccess: () => refetch(),
-    // })
-    // const handleUpdate = () => {
-    //     setIsUpdating(true)
-    // }
+    const handleCommentEdit = (comment: any) => {
+        setIsEditingComment(comment.idx)
+        setEditedCommentContent(comment.content)
+    }
+
+    const handleCommentSave = (commentIdx: number) => {
+        updateCommentMutation.mutate({
+            commentIdx,
+            content: editedCommentContent,
+        })
+    }
 
     return (
         <div className='container mx-auto p-4'>
@@ -149,26 +161,61 @@ export default function PostDetail() {
                 <div className='space-y-4 mt-4'>
                     {post?.comments.map((comment: any) => (
                         <div key={comment.idx} className='border p-2 rounded'>
-                            <p>{comment.content}</p>
-                            {comment?.authorIdx === userIdx && (
+                            {isEditingComment === comment.idx ? (
                                 <>
-                                    <button
-                                        onClick={(e) => {
-                                            e.stopPropagation()
-                                            deleteCommentMutation.mutate(
-                                                comment.idx
+                                    <textarea
+                                        value={editedCommentContent}
+                                        onChange={(e) =>
+                                            setEditedCommentContent(
+                                                e.target.value
                                             )
-                                        }}
-                                        className='bg-red-500 text-white py-1 px-2 rounded mt-2'
+                                        }
+                                        className='w-full p-2 border rounded mb-2'
+                                    />
+                                    <button
+                                        onClick={() =>
+                                            handleCommentSave(comment.idx)
+                                        }
+                                        className='bg-green-500 text-white py-1 px-2 rounded mt-2'
                                     >
-                                        Delete
+                                        Save
                                     </button>
-                                    {/* <button
-                                        onClick={handleUpdate}
-                                        className='bg-yellow-500 text-white py-1 px-2 rounded mt-2 ml-2'
+                                    <button
+                                        onClick={() =>
+                                            setIsEditingComment(null)
+                                        }
+                                        className='bg-gray-500 text-white py-1 px-2 rounded mt-2 ml-2'
                                     >
-                                        Edit
-                                    </button> */}
+                                        Cancel
+                                    </button>
+                                </>
+                            ) : (
+                                <>
+                                    <p>{comment.author}</p>
+                                    <p>{comment.content}</p>
+                                    {comment?.authorIdx === userIdx && (
+                                        <>
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation()
+                                                    deleteCommentMutation.mutate(
+                                                        comment.idx
+                                                    )
+                                                }}
+                                                className='bg-red-500 text-white py-1 px-2 rounded mt-2'
+                                            >
+                                                Delete
+                                            </button>
+                                            <button
+                                                onClick={() =>
+                                                    handleCommentEdit(comment)
+                                                }
+                                                className='bg-yellow-500 text-white py-1 px-2 rounded mt-2 ml-2'
+                                            >
+                                                Edit
+                                            </button>
+                                        </>
+                                    )}
                                 </>
                             )}
                         </div>

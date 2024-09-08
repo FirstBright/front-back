@@ -126,6 +126,7 @@ export default function Posts() {
                             onClick={() =>
                                 router.push(`/posts?page=${pageNumber + 1}`)
                             }
+                            disabled={pageNumber >= data.totalPages}
                         >
                             Next
                         </button>
