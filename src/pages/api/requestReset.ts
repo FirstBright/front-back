@@ -39,7 +39,7 @@ export default async function requestReset(
                 })
 
                 await transporter.sendMail({
-                    from: '"Support" <support@example.com>',
+                    from: '"Support" <boom_tuhon@naver.com>',
                     to: email,
                     subject: "Password Reset Code",
                     text: `Your reset code is: ${randomCode}`,

@@ -50,7 +50,7 @@ model Comment {
 
 model PasswordReset {
   id        Int      @id @default(autoincrement())
-  email     String   @unique
+  email     String   
   resetCode String
   expiresAt DateTime
   createdAt DateTime @default(now())

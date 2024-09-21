@@ -1,9 +1,11 @@
 import { useMutation } from "@tanstack/react-query"
 import axios from "axios"
 import { useRouter } from "next/router"
+import { useState } from "react"
 
 export default function ValidateResetCode() {
     const router = useRouter()
+    const [isValid, setIsValid] = useState(false)
     const { email } = router.query
 
     const validateResetCode = useMutation({
@@ -12,22 +14,36 @@ export default function ValidateResetCode() {
                 email,
                 resetCode,
             }),
-        onSuccess: (_,resetCode) => {
-
-                router.push({
-                    pathname: "/resetPassword",
-                    query: { email, resetCode },
-                })
-            },
+        onSuccess: () => {
+            setIsValid(true)
         },
-    )
+    })
+    const resetPasswordMutation = useMutation({
+        mutationFn: async ({ email, resetCode, newPassword }: any) =>
+            await axios.post("/api/resetPassword", {
+                email,
+                resetCode,
+                newPassword,
+            }),
+        onSuccess: () => {
+            router.push("/login")
+        },
+    })
 
     const handleResetCode = (e: any) => {
         e.preventDefault()
-        validateResetCode.mutate({
-            email,
-            resetCode: e.currentTarget.resetCode,
-        })
+        if (isValid === false) {
+            validateResetCode.mutate({
+                email,
+                resetCode: e.currentTarget.resetCode.value,
+            })
+        } else {
+            resetPasswordMutation.mutate({
+                email,
+                resetCode: e.currentTarget.resetCode.value,
+                newPassword: e.currentTarget.password.value,
+            })
+        }
     }
 
     return (
@@ -48,11 +64,43 @@ export default function ValidateResetCode() {
                             className='mt-1 block w-full'
                         />
                     </div>
+                    {isValid === true ? (
+                        <>
+                            <div>
+                                <label
+                                    htmlFor='password'
+                                    className='block text-sm'
+                                >
+                                    Password
+                                </label>
+                                <input
+                                    type='password'
+                                    id='password'
+                                    name='password'
+                                    className='mt-1 block w-full'
+                                />
+                            </div>
+                            <div>
+                                <label
+                                    htmlFor='checkPasword'
+                                    className='block text-sm'
+                                >
+                                    Check password
+                                </label>
+                                <input
+                                    type='checkPasword'
+                                    id='checkPasword'
+                                    name='checkPasword'
+                                    className='mt-1 block w-full'
+                                />
+                            </div>
+                        </>
+                    ) : null}
                     <button
                         type='submit'
                         className='w-full bg-indigo-600 text-white py-2'
                     >
-                        Confirm Code
+                        {isValid === true ? "Change Password" : "Confirm Code"}
                     </button>
                 </form>
             </div>
