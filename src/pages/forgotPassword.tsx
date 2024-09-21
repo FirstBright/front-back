@@ -10,19 +10,19 @@ export default function ForgotPassword() {
             await axios.post("/api/requestReset", {
                 email,
             }),
-        onSuccess: (_, email) => {
+        onSuccess: (_, { email }) => {
+            // Pass email as query parameter to ValidateResetCode page
             router.push({
                 pathname: "/validateResetCode",
-                query: { email },
+                query: { email }, // email is passed here as query param
             })
         },
     })
 
     const handleForgotPassword = (e: any) => {
         e.preventDefault()
-        forgotPasswordMutation.mutate({
-            email: e.currentTarget.email.value,
-        })
+        const email = e.currentTarget.email.value
+        forgotPasswordMutation.mutate({ email })
     }
 
     return (

@@ -37,15 +37,15 @@ export default async function requestReset(
                         expiresAt,
                     },
                 })
-
+                console.log("Reset code created:", randomCode)
                 await transporter.sendMail({
-                    from: '"Support" <boom_tuhon@naver.com>',
+                    from: "boom_tuhon@naver.com",
                     to: email,
                     subject: "Password Reset Code",
                     text: `Your reset code is: ${randomCode}`,
                     html: `<b>Your reset code is: ${randomCode}</b>`,
                 })
-
+                console.log("Email sent to:", email)
                 res.status(200).json({ message: "Reset code sent" })
             } catch (error) {
                 res.status(500).json({ error: "Internal server error" })
@@ -56,7 +56,7 @@ export default async function requestReset(
             })
         }
     } catch (e: any) {
-        res.status(500).json({
+        res.status(501).json({
             message: e.message,
         })
     }
