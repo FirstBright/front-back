@@ -103,151 +103,160 @@ export default function PostDetail() {
     }
 
     return (
-        <div className='container mx-auto p-4'>
-            {isEditing ? (
-                <>
-                    <input
-                        value={editedTitle}
-                        onChange={(e) => setEditedTitle(e.target.value)}
-                        className='text-2xl font-bold mb-4 w-full p-2 border rounded'
-                    />
-                    <textarea
-                        value={editedContent}
-                        onChange={(e) => setEditedContent(e.target.value)}
-                        className='w-full p-2 border rounded mb-4'
-                        rows={6}
-                    />
-                    <button
-                        onClick={handleSave}
-                        className='bg-green-500 text-white py-2 px-4 rounded-md mr-2'
-                    >
-                        Save
-                    </button>
-                    <button
-                        onClick={handleCancel}
-                        className='bg-gray-500 text-white py-2 px-4 rounded-md'
-                    >
-                        Cancel
-                    </button>
-                </>
-            ) : (
-                <>
-                    <h1 className='text-2xl font-bold mb-4'>{post?.title}</h1>
-                    <p>{post?.content}</p>
+        <div className='flex items-center justify-center min-h-screen bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 '>
+            <div className='p-6 bg-white min-w-620px rounded-lg shadow hover:shadow-lg transition-shadow duration-300 ease-in-out cursor-pointer overflow-hidden container mx-auto px-4'>
+                {isEditing ? (
+                    <>
+                        <input
+                            value={editedTitle}
+                            onChange={(e) => setEditedTitle(e.target.value)}
+                            className='text-2xl font-bold mb-4 w-full p-2 border rounded'
+                        />
+                        <textarea
+                            value={editedContent}
+                            onChange={(e) => setEditedContent(e.target.value)}
+                            className='w-full p-2 border rounded mb-4'
+                            rows={6}
+                        />
+                        <button
+                            onClick={handleSave}
+                            className='bg-green-500 text-white py-2 px-4 rounded-md mr-2'
+                        >
+                            Save
+                        </button>
+                        <button
+                            onClick={handleCancel}
+                            className='bg-gray-500 text-white py-2 px-4 rounded-md'
+                        >
+                            Cancel
+                        </button>
+                    </>
+                ) : (
+                    <>
+                        <h1 className='text-2xl font-bold mb-4'>
+                            {post?.title}
+                        </h1>
+                        <p className='break-words'>{post?.content}</p>
 
-                    {post?.authorIdx === userIdx && (
-                        <>
-                            <button
-                                onClick={(e) => {
-                                    e.stopPropagation()
-                                    deletePostMutation.mutate(post.idx)
-                                }}
-                                className='bg-red-500 text-white py-1 px-2 rounded mt-2'
+                        {post?.authorIdx === userIdx && (
+                            <>
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation()
+                                        deletePostMutation.mutate(post.idx)
+                                    }}
+                                    className='bg-red-500 text-white py-1 px-2 rounded mt-2'
+                                >
+                                    Delete
+                                </button>
+                                <button
+                                    onClick={handleEdit}
+                                    className='bg-yellow-500 text-white py-1 px-2 rounded mt-2 ml-2'
+                                >
+                                    Edit
+                                </button>
+                            </>
+                        )}
+                    </>
+                )}
+                <div className='mt-6'>
+                    <h2 className='text-xl font-semibold'>Comments</h2>
+                    <div className='space-y-4 mt-4'>
+                        {post?.comments.map((comment: any) => (
+                            <div
+                                key={comment.idx}
+                                className='border p-2 rounded'
                             >
-                                Delete
-                            </button>
-                            <button
-                                onClick={handleEdit}
-                                className='bg-yellow-500 text-white py-1 px-2 rounded mt-2 ml-2'
-                            >
-                                Edit
-                            </button>
-                        </>
-                    )}
-                </>
-            )}
-            <div className='mt-6'>
-                <h2 className='text-xl font-semibold'>Comments</h2>
-                <div className='space-y-4 mt-4'>
-                    {post?.comments.map((comment: any) => (
-                        <div key={comment.idx} className='border p-2 rounded'>
-                            {isEditingComment === comment.idx ? (
-                                <>
-                                    <textarea
-                                        value={editedCommentContent}
-                                        onChange={(e) =>
-                                            setEditedCommentContent(
-                                                e.target.value
-                                            )
-                                        }
-                                        className='w-full p-2 border rounded mb-2'
-                                    />
-                                    <button
-                                        onClick={() =>
-                                            handleCommentSave(comment.idx)
-                                        }
-                                        className='bg-green-500 text-white py-1 px-2 rounded mt-2'
-                                    >
-                                        Save
-                                    </button>
-                                    <button
-                                        onClick={() =>
-                                            setIsEditingComment(null)
-                                        }
-                                        className='bg-gray-500 text-white py-1 px-2 rounded mt-2 ml-2'
-                                    >
-                                        Cancel
-                                    </button>
-                                </>
-                            ) : (
-                                <>
-                                    <p>
-                                        <strong>Author </strong>
-                                        {comment.author.nickname}
-                                    </p>
-                                    <p>{comment.content}</p>
-                                    {comment?.authorIdx === userIdx && (
-                                        <>
-                                            <button
-                                                onClick={(e) => {
-                                                    e.stopPropagation()
-                                                    deleteCommentMutation.mutate(
-                                                        comment.idx
-                                                    )
-                                                }}
-                                                className='bg-red-500 text-white py-1 px-2 rounded mt-2'
-                                            >
-                                                Delete
-                                            </button>
-                                            <button
-                                                onClick={() =>
-                                                    handleCommentEdit(comment)
-                                                }
-                                                className='bg-yellow-500 text-white py-1 px-2 rounded mt-2 ml-2'
-                                            >
-                                                Edit
-                                            </button>
-                                        </>
-                                    )}
-                                </>
-                            )}
-                        </div>
-                    ))}
+                                {isEditingComment === comment.idx ? (
+                                    <>
+                                        <textarea
+                                            value={editedCommentContent}
+                                            onChange={(e) =>
+                                                setEditedCommentContent(
+                                                    e.target.value
+                                                )
+                                            }
+                                            className='w-full p-2 border rounded mb-2 break-words'
+                                        />
+                                        <button
+                                            onClick={() =>
+                                                handleCommentSave(comment.idx)
+                                            }
+                                            className='bg-green-500 text-white py-1 px-2 rounded mt-2'
+                                        >
+                                            Save
+                                        </button>
+                                        <button
+                                            onClick={() =>
+                                                setIsEditingComment(null)
+                                            }
+                                            className='bg-gray-500 text-white py-1 px-2 rounded mt-2 ml-2'
+                                        >
+                                            Cancel
+                                        </button>
+                                    </>
+                                ) : (
+                                    <>
+                                        <p>
+                                            <strong>Author </strong>
+                                            {comment.author.nickname}
+                                        </p>
+                                        <p>{comment.content}</p>
+                                        {comment?.authorIdx === userIdx && (
+                                            <>
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation()
+                                                        deleteCommentMutation.mutate(
+                                                            comment.idx
+                                                        )
+                                                    }}
+                                                    className='bg-red-500 text-white py-1 px-2 rounded mt-2'
+                                                >
+                                                    Delete
+                                                </button>
+                                                <button
+                                                    onClick={() =>
+                                                        handleCommentEdit(
+                                                            comment
+                                                        )
+                                                    }
+                                                    className='bg-yellow-500 text-white py-1 px-2 rounded mt-2 ml-2'
+                                                >
+                                                    Edit
+                                                </button>
+                                            </>
+                                        )}
+                                    </>
+                                )}
+                            </div>
+                        ))}
+                    </div>
                 </div>
-            </div>
 
-            <div className='mt-4'>
-                <form
-                    onSubmit={(e) => {
-                        e.preventDefault()
-                        createCommentMutation.mutate({
-                            content: e.currentTarget.comment.value,
-                        })
-                        e.currentTarget.comment.value = ""
-                    }}
-                >
-                    <textarea
-                        name='comment'
-                        className='border rounded w-full p-2 mb-2'
-                        placeholder='Write a comment...'
-                    />
-                    <button
-                        type='submit'
-                        className='bg-blue-500 text-white py-2 px-4 rounded-md'
+                <div className='mt-4'>
+                    <form
+                        onSubmit={(e) => {
+                            e.preventDefault()
+                            createCommentMutation.mutate({
+                                content: e.currentTarget.comment.value,
+                            })
+                            e.currentTarget.comment.value = ""
+                        }}
                     >
-                        Post Comment
-                    </button>
-                </form>
+                        <textarea
+                            name='comment'
+                            className='border rounded w-full p-2 mb-2'
+                            placeholder='Write a comment...'
+                        />
+                        <button
+                            type='submit'
+                            className='bg-blue-500 text-white py-2 px-4 rounded-md'
+                        >
+                            Post Comment
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     )

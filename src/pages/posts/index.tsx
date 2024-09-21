@@ -39,100 +39,108 @@ export default function Posts() {
     if (error) return <div>Error fetching posts</div>
 
     return (
-        <div className='container mx-auto p-4'>
-            <h1 className='text-2xl font-bold m-6'>Posts</h1>
+        <div className='flex items-center justify-center min-h-screen bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 '>
+            <div className='p-6 bg-white min-w-620px rounded-lg shadow hover:shadow-lg transition-shadow duration-300 ease-in-out cursor-pointer overflow-hidden container mx-auto px-4'>
+                <h1 className='text-2xl font-bold m-6 text-center'>Posts</h1>
 
-            {isCreating ? (
-                <form onSubmit={handleSubmit} className='space-y-4'>
-                    <div>
-                        <label
-                            htmlFor='title'
-                            className='block text-sm font-medium text-gray-700'
-                        >
-                            Title
-                        </label>
-                        <input
-                            type='text'
-                            id='title'
-                            name='title'
-                            required
-                            className='mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm'
-                        />
-                    </div>
-                    <div>
-                        <label
-                            htmlFor='content'
-                            className='block text-sm font-medium text-gray-700'
-                        >
-                            Content
-                        </label>
-                        <textarea
-                            id='content'
-                            name='content'
-                            required
-                            className='mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm'
-                        />
-                    </div>
-                    <button
-                        type='submit'
-                        className='w-full bg-blue-500 text-white py-2 px-4 rounded-md shadow hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500'
+                {isCreating ? (
+                    <form
+                        onSubmit={handleSubmit}
+                        className='space-y-4 bg-white p-6 rounded-lg shadow-md'
                     >
-                        Create Post
-                    </button>
-                    <button
-                        type='button'
-                        className='w-full bg-gray-500 text-white py-2 px-4 rounded-md shadow mt-2'
-                        onClick={() => setIsCreating(false)}
-                    >
-                        Cancel
-                    </button>
-                </form>
-            ) : (
-                <div>
-                    <button
-                        onClick={() => setIsCreating(true)}
-                        className='bg-blue-500 text-white py-2 px-4 rounded-md shadow mb-4'
-                    >
-                        Create New Post
-                    </button>
-                    <div className='grid grid-cols-1 gap-4'>
-                        {data.posts.map((post: any) => (
-                            <div
-                                key={post.idx}
-                                className='p-4 border rounded-md shadow'
-                                onClick={() =>
-                                    router.push(`/posts/${post.idx}`)
-                                }
+                        <div>
+                            <label
+                                htmlFor='title'
+                                className='block text-sm font-medium text-gray-700'
                             >
-                                <h2 className='text-xl font-semibold'>
-                                    {post.title}
-                                </h2>
-                                <p>{post.content}</p>
-                            </div>
-                        ))}
-                    </div>
-                    {/* Pagination controls */}
-                    <div className='mt-6'>
+                                Title
+                            </label>
+                            <input
+                                type='text'
+                                id='title'
+                                name='title'
+                                required
+                                className='mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm'
+                            />
+                        </div>
+                        <div>
+                            <label
+                                htmlFor='content'
+                                className='block text-sm font-medium text-gray-700'
+                            >
+                                Content
+                            </label>
+                            <textarea
+                                id='content'
+                                name='content'
+                                required
+                                className='mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm'
+                            />
+                        </div>
                         <button
-                            onClick={() =>
-                                router.push(`/posts?page=${pageNumber - 1}`)
-                            }
-                            disabled={pageNumber <= 1}
-                            className='mr-2'
+                            type='submit'
+                            className='w-full bg-blue-500 text-white py-2 px-4 rounded-md shadow hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500'
                         >
-                            Previous
+                            Create Post
                         </button>
                         <button
-                            onClick={() =>
-                                router.push(`/posts?page=${pageNumber + 1}`)
-                            }
-                            disabled={pageNumber >= data.totalPages}
+                            type='button'
+                            className='w-full bg-gray-500 text-white py-2 px-4 rounded-md shadow mt-2'
+                            onClick={() => setIsCreating(false)}
                         >
-                            Next
+                            Cancel
                         </button>
+                    </form>
+                ) : (
+                    <div>
+                        <button
+                            onClick={() => setIsCreating(true)}
+                            className='bg-blue-500 text-white py-2 px-4 rounded-md shadow mb-4'
+                        >
+                            Create New Post
+                        </button>
+                        <div className='grid grid-cols-1 gap-4'>
+                            {data.posts.map((post: any) => (
+                                <div
+                                    key={post.idx}
+                                    className='p-6 bg-white rounded-lg shadow hover:shadow-lg transition-shadow duration-300 ease-in-out cursor-pointer'
+                                    onClick={() =>
+                                        router.push(`/posts/${post.idx}`)
+                                    }
+                                >
+                                    <h2 className='text-xl font-semibold text-gray-800 break-words'>
+                                        {post.title}
+                                    </h2>
+                                    <p className='text-gray-600 mt-2 break-words'>
+                                        {post.content}
+                                    </p>
+                                </div>
+                            ))}
+                        </div>
+                        {/* Pagination controls */}
+                        <div className='mt-6 flex justify-center space-x-4'>
+                            <button
+                                onClick={() =>
+                                    router.push(`/posts?page=${pageNumber - 1}`)
+                                }
+                                disabled={pageNumber <= 1}
+                                className='bg-indigo-600 text-white py-2 px-4 rounded-md shadow hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'
+                            >
+                                Previous
+                            </button>
+                            <button
+                                onClick={() =>
+                                    router.push(`/posts?page=${pageNumber + 1}`)
+                                }
+                                disabled={pageNumber >= data.totalPages}
+                                className='bg-indigo-600 text-white py-2 px-4 rounded-md shadow hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'
+                            >
+                                Next
+                            </button>
+                        </div>
                     </div>
-                </div>
-            )}
+                )}
+            </div>
         </div>
     )
 }
