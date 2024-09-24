@@ -82,15 +82,15 @@ export default function ValidateResetCode() {
                             </div>
                             <div>
                                 <label
-                                    htmlFor='checkPasword'
+                                    htmlFor='password'
                                     className='block text-sm'
                                 >
                                     Check password
                                 </label>
                                 <input
-                                    type='checkPasword'
-                                    id='checkPasword'
-                                    name='checkPasword'
+                                    type='password'
+                                    id='checkPassword'
+                                    name='checkPassword'
                                     className='mt-1 block w-full'
                                 />
                             </div>
