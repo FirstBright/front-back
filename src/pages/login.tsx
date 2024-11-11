@@ -1,5 +1,6 @@
 import { useMutation } from "@tanstack/react-query"
 import axios from "axios"
+import Link from "next/link"
 import { useRouter } from "next/router"
 
 export default function Login() {
@@ -60,9 +61,9 @@ export default function Login() {
                     </button>
                 </form>
                 <div className='mt-4 text-center'>
-                    <a href='/forgotPassword' className='text-blue-600'>
+                    <Link href='/forgotPassword' className='text-blue-600'>
                         Forgot Password?
-                    </a>
+                    </Link>
                 </div>
             </div>
         </div>
