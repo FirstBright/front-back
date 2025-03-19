@@ -32,6 +32,14 @@ export default function Home() {
                         </p>
                         <div className='mt-4'>
                             <button
+                                onClick={() => {
+                                    router.push("/posts")
+                                }}
+                                className='w-full bg-indigo-600 text-white py-2 px-4 rounded-md shadow hover:bg-indigo-300 focus:outline-none focus:ring-2 mb-4 focus:ring-offset-2 focus:ring-gray-500'
+                            >
+                                Go To Posts
+                            </button>
+                            <button
                                 onClick={logout}
                                 className='w-full bg-gray-200 text-gray-700 py-2 px-4 rounded-md shadow hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500'
                             >
@@ -40,28 +48,26 @@ export default function Home() {
                         </div>
                     </div>
                 ) : (
-                    <>
-                        <div className='space-y-4'>
-                            <button
-                                onClick={() => router.push("/signUp")}
-                                className='w-full bg-green-600 text-white p-2'
-                            >
-                                Sign Up
-                            </button>
-                            <button
-                                onClick={() => router.push("/login")}
-                                className='w-full bg-indigo-600 text-white p-2'
-                            >
-                                Log In
-                            </button>
-                            <button
-                                onClick={() => router.push("/forgotPassword")}
-                                className='w-full bg-pink-600 text-white p-2'
-                            >
-                                Reset Password
-                            </button>
-                        </div>
-                    </>
+                    <div className='space-y-4'>
+                        <button
+                            onClick={() => router.push("/signUp")}
+                            className='w-full bg-green-600 text-white p-2'
+                        >
+                            Sign Up
+                        </button>
+                        <button
+                            onClick={() => router.push("/login")}
+                            className='w-full bg-indigo-600 text-white p-2'
+                        >
+                            Log In
+                        </button>
+                        <button
+                            onClick={() => router.push("/forgotPassword")}
+                            className='w-full bg-pink-600 text-white p-2'
+                        >
+                            Reset Password
+                        </button>
+                    </div>
                 )}
             </div>
         </div>

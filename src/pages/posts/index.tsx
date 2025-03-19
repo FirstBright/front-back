@@ -35,8 +35,18 @@ export default function Posts() {
         const content = e.currentTarget.content.value
         createPostMutation.mutate({ title, content })
     }
-    if (isLoading) return <div>Loading...</div>
-    if (error) return <div>Error fetching posts</div>
+    if (isLoading)
+        return (
+            <div className='flex items-center justify-center min-h-screen bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 '>
+                <div className='text-white'>Loading...</div>
+            </div>
+        )
+    if (error)
+        return (
+            <div className='flex items-center justify-center min-h-screen bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 '>
+                <div className='text-white'>Error fetching posts</div>
+            </div>
+        )
 
     return (
         <div className='flex items-center justify-center min-h-screen bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 '>
